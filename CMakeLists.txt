@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
 
-
 # Import the Pico SDK (assumes PICO_SDK_PATH is set, or copy the import file)
 include(pico_sdk_import.cmake)
 
@@ -20,6 +19,7 @@ add_executable(i2c_scanner
 target_link_libraries(i2c_scanner
 	hardware_i2c
 	pico_stdlib
+	pico_stdio_usb
 )
 
 # Optional: enable USB stdio if needed (comment out if not used)
