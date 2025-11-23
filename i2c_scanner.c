@@ -3,8 +3,8 @@
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 
-#define SDA 
-
+#define MAX_SENSORS 10
+#define ADDR_STRLEN 5
 // I2C reserves some addresses for special purposes. We exclude these from the scan.
 // These are any addresses of the form 000 0xxx or 111 1xxx
 bool reserved_addr(uint8_t addr) {
@@ -12,6 +12,9 @@ bool reserved_addr(uint8_t addr) {
 }
 
 int main() {
+	char detected_sensors[MAX_SENSORS][ADDR_STRLEN];
+	int sensor_count = 0;
+
     // Enable UART so we can print status output
     stdio_init_all();
 	gpio_init(PICO_DEFAULT_LED_PIN);
@@ -26,6 +29,7 @@ int main() {
     bi_decl(bi_2pins_with_func(PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
 	while (1)
 	{
+		sensor_count = 0;
 		gpio_put(PICO_DEFAULT_LED_PIN, 1);
 		printf("\nI2C Bus Scan\n");
 		printf("   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
@@ -49,9 +53,20 @@ int main() {
 				ret = i2c_read_blocking(i2c_default, addr, &rxdata, 1, false);
 
 			printf(ret < 0 ? "." : "@");
+			if (ret >= 0){
+				snprintf(detected_sensors[sensor_count], ADDR_STRLEN, "0x%02X", addr);
+				sensor_count++;
+			}
 			printf(addr % 16 == 15 ? "\n" : "  ");
 		}
 		printf("Done.\n");
+		if (sensor_count == 0)
+            printf("none\n");
+        else
+        {
+            for (int i = 0; i < sensor_count; ++i)
+                printf("%s%s", detected_sensors[i], i < sensor_count - 1 ? ", " : "\n");
+        }
 		sleep_ms(1000);
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
         sleep_ms(1000);
