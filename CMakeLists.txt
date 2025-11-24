@@ -13,6 +13,7 @@ pico_sdk_init()
 # Create executable from our source
 add_executable(i2c_scanner
     i2c_scanner.c
+	display.c
 )
 
 # Link the Pico standard library (GPIO, timing, etc.)

@@ -5,6 +5,9 @@
 
 #define MAX_SENSORS 10
 #define ADDR_STRLEN 5
+
+int write_to_disp(char **text);
+
 // I2C reserves some addresses for special purposes. We exclude these from the scan.
 // These are any addresses of the form 000 0xxx or 111 1xxx
 bool reserved_addr(uint8_t addr) {
@@ -62,11 +65,12 @@ int main() {
 		printf("Done.\n");
 		if (sensor_count == 0)
             printf("none\n");
-        else
+		else
         {
             for (int i = 0; i < sensor_count; ++i)
                 printf("%s%s", detected_sensors[i], i < sensor_count - 1 ? ", " : "\n");
         }
+		write_to_disp(detected_sensors);
 		sleep_ms(1000);
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
         sleep_ms(1000);
